@@ -1,0 +1,237 @@
+*, *::after, *::before {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+body, html {
+  padding: 0px;
+  margin: 0px;
+  font-family: "Helvetica Neue", Helvetica, sans-serif;
+  font-weight: lighter;
+  font-size: 10px;
+}
+a {
+  color: #01e;
+  text-decoration: none;
+}
+a:visited {
+  color: #01e;
+}
+a:hover {
+  color: #01e;
+}
+h2 {
+  font-size: 16px;
+  text-align: center;
+  font-weight: 300;
+}
+p {
+  margin-left: 1em;
+  text-align: center;
+}
+#tab {
+  position: relative;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  max-width: 600px;
+  height: 200px;
+  background-color: rgba(0,0,0,0.8);
+  padding-top: 0.5em;
+  color: #fff;
+  font-weight: 300;
+}
+#tab .header {
+  font-size: 1.6em;
+  border-bottom: 1px solid #aaa;
+  flex: 0 0 auto;
+}
+#tab .header ul{
+  padding: 0;
+  margin: 0;
+  margin: 0 auto;
+  display: table;
+  position: relative;
+}
+#tab .header ul .line{
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  border-bottom: 1px solid #5CC9F5;
+  width: 80px;
+  transition: all 200ms linear;
+}
+#tab .header ul li{
+  text-align: center;
+  width: 80px;
+  list-style: none;
+  display: table-cell;
+  padding: 0.5em 0;
+}
+#tab .header ul li.active{
+  font-weight: 500;
+}
+#tab .body {
+  flex: 1 0 auto;
+  position: relative;
+  overflow: hidden;
+  font-size: 1.2em;
+}
+#tab .body > div{
+  width: 300vw;
+  display: flex;
+  flex-direction: row;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  bottom: 0px;
+}
+#tab .body ul{
+  margin: 0;
+  padding: 1em 2em;
+}
+#tab .body ul > li{
+  margin: 1em 0;
+}
+#tab .body .scrollable{
+  position: relative;
+  flex: 0 0 100vw;
+  overflow-y: scroll;
+  user-select: none;
+  -webkit-overflow-scrolling: touch;
+}
+#tab .bottom {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 60px;
+  bottom: 0;
+  background: linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0.5));
+}
+.container {
+  width: 100%;
+  overflow: hidden;
+  margin: 20px 0;
+  background-color: #f5f5f5;
+  color: #fff;
+}
+.container > div {
+  width: 6000px;
+}
+.container > div::after{
+  display: table;
+  content: '';
+  clear: both;
+}
+.container .item {
+  float: left;
+  width: 25vw;
+  height: 60px;
+  text-align: center;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.container .item > div {
+  text-align: center;
+  width: 50px;
+  height: 50px;
+  line-height: 50px;
+  flex: 0 0 auto;
+}
+.one {
+  background-color: orange;
+}
+.two {
+  background-color: tomato;
+}
+.three {
+  background-color: lightgreen;
+}
+.four {
+  background-color: deepskyblue;
+}
+.five {
+  background-color: gold;
+}
+.six {
+  background-color: pink;
+}
+.seven {
+  background-color: Wheat;
+}
+#carousel {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+#carousel .imgs ul {
+  padding: 0;
+  margin: 0;
+  width: 5000px;
+}
+#carousel ul li {
+  list-style: none;
+}
+#carousel  .box {
+  display: block;
+  float: left;
+}
+.img-responsive {
+  width: 100vw;
+  display: block;
+  height: auto;
+}
+#carousel .indicator {
+  position: absolute;
+  bottom: 10px;
+  left: 0px;
+  right: 0px;
+  text-align: center;
+  color: #fff;
+}
+#carousel .indicator ul {
+  display: block;
+  margin: 0 auto;
+  padding: 0;
+}
+#carousel .indicator ul > li {
+  list-style: none;
+  margin: 0 2px;
+  width: 8px;
+  height: 8px;
+  display: inline-block;
+  border-radius: 50%;
+  background-color: rgba(255,255,255,0.3);
+}
+#carousel .indicator ul>li.active {
+  background-color: #fff;
+}
+.iscroll-handlebar {
+  position: absolute;
+  right: 1px;
+  top: 0px;
+  -webkit-transition: background-color 0.2s ease-out, -webkit-transform 0.1s ease-out,width 0.1s ease-out, height 0.1s ease-out;
+  transition: background-color 0.2s ease-out, transform 0.1s ease-out,width 0.1s ease-out, height 0.1s ease-out;
+  width: 2px;
+  border-radius: 1px;
+  background-color: rgba(0, 0, 0, 0);
+  z-index: 9999;
+  height: 0px;
+}
+footer {
+  text-align: center;
+  padding: 1em 0;
+}
+
+@media only screen and (min-width: 767px){
+  #carousel {
+    width: 760px;
+    margin: 0 auto;
+  }
+  #carousel img {
+    width: 760px;
+  }
+}
