@@ -32,7 +32,10 @@ See [example](https://chemzqm.github.io/hscroll) with your phone.
 
 ``` js
 var el = document.querySelector('.container')
-var Hscroll = rquire('hscroll')
+var Hscroll = require('hscroll')
+new Hscroll(el, {
+  type: 'swipe'
+})
 ```
 
 ## Event
