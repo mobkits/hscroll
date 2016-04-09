@@ -51,7 +51,7 @@
 	var transform = detect.transform
 	var ontap = __webpack_require__(24)
 	
-	var els = document.querySelectorAll('.container')
+	var els = document.querySelectorAll('.hscroll')
 	;[].slice.call(els).forEach(function (el) {
 	  var type
 	  if (el.classList.contains('swipe')) type = 'swipe'

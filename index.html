@@ -7,10 +7,17 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <title>hscroll</title>
     <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="./solarized_dark.css">
+    <style>
+      .container {
+        max-width: 860px;
+        margin: 0 auto;
+      }
+    </style>
   </head>
   <body>
     <h2>scroll without option</h2>
-    <div class="container">
+    <div class="hscroll container">
       <div>
         <div class="item"><div class="one">one</div></div>
         <div class="item"><div class="two">two</div></div>
@@ -21,9 +28,16 @@
         <div class="item"><div class="seven">seven</div></div>
       </div>
     </div>
-
+    <div class="container">
+      <p>
+      <pre><code>
+var Hscroll = require('hscroll')
+var scroll = new Hscroll(el)
+      </code></pre>
+      </p>
+    </div>
     <h2>scroll with swipe</h2>
-    <div class="container swipe">
+    <div class="hscroll container swipe">
       <div>
         <div class="item"><div class="one">one</div></div>
         <div class="item"><div class="two">two</div></div>
@@ -33,9 +47,17 @@
         <div class="item"><div class="six">six</div></div>
         <div class="item"><div class="seven">seven</div></div>
       </div>
+    </div>
+    <div class="container">
+      <p>
+      <pre><code>
+var Hscroll = require('hscroll')
+var scroll = new Hscroll(el, {type: 'swipe'})
+      </code></pre>
+      </p>
     </div>
     <h2>scroll with items fix on the edge</h2>
-    <div class="container fix">
+    <div class="hscroll container fix">
       <div>
         <div class="item"><div class="one">one</div></div>
         <div class="item"><div class="two">two</div></div>
@@ -45,6 +67,14 @@
         <div class="item"><div class="six">six</div></div>
         <div class="item"><div class="seven">seven</div></div>
       </div>
+    </div>
+    <div class="container">
+      <p>
+      <pre><code>
+var Hscroll = require('hscroll')
+var scroll = new Hscroll(el, {type: 'fix'})
+      </code></pre>
+      </p>
     </div>
     <h2>A carousel example</h2>
     <div id="carousel">
@@ -66,6 +96,18 @@
     <p>
       <i>Feel free to rotate your phone screen</i>
     </p>
+    <div class="container">
+      <p>
+      <pre><code>
+var Hscroll = require('hscroll')
+var scroll = new Hscroll(el, {
+  type: 'swipe',
+  interval: 2000
+})
+scroll.play()
+      </code></pre>
+      </p>
+    </div>
     <h2>A tab example with iscroll</h2>
     <div id="tab">
       <div class="header">
@@ -119,9 +161,50 @@
       <div class="bottom">
       </div>
     </div>
+    <div class="container">
+      <p>
+      <pre><code>
+var els = document.querySelectorAll('#tab .scrollable')
+;[].slice.call(els).forEach(function (el) {
+  new Iscroll(el, {
+    handlebar: true
+  })
+})
+var tab = document.getElementById('tab')
+var scroll = new Hscroll(tab.querySelector('.body'), {
+  type: 'swipe'
+})
+var tabs = tab.querySelectorAll('.header li')
+var line = tab.querySelector('.header .line')
+function active(n) {
+  for (var i = 0, l = tabs.length; i < l; i++) {
+    if (i == n) {
+      tabs[i].classList.add('active')
+    } else {
+      tabs[i].classList.remove('active')
+    }
+  }
+  line.style[transform] = 'translateX(' + 80*n + 'px)'
+}
+scroll.on('show', active)
+ontap(tab.querySelector('.header'), function (e) {
+  var target = e.target
+  if (target.tagName.toLowerCase() == 'li') {
+    var n = [].slice.call(tabs).indexOf(target)
+    active(n)
+    scroll.show(n)
+  }
+})
+      </code></pre>
+      </p>
+    </div>
     <footer>
       Made by <a href="https://github.com/chemzqm">chemzqm</a>
     </footer>
     <script src="./bundle.js" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript" charset="utf-8" src="./highlight.pack.js"> </script>
+    <script type="text/javascript" charset="utf-8">
+      hljs.initHighlightingOnLoad();
+    </script>
   </body>
 </html>
