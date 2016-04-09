@@ -2059,13 +2059,14 @@
 	  var deceleration = 0.001
 	  var speed = this.speed
 	  var x = this.tx
-	  speed = Math.min(speed, 0.4)
+	  speed = Math.min(speed, 2)
 	  var limit = this.getLimitation()
 	  var minX = limit.min
-	  var destination = x + ( speed * speed ) / ( 2 * deceleration ) * this.direction
-	  var duration = speed / deceleration
+	  var rate = (4 - Math.PI)/2
+	  var destination = x + rate*(speed*speed)/(2*deceleration)*this.direction
+	  var duration = speed/deceleration
 	  var newX
-	  var ease = 'out-cube'
+	  var ease = 'out-circ'
 	  if (destination > 0) {
 	    newX = 0
 	    ease = 'out-back'
@@ -2074,11 +2075,11 @@
 	    ease = 'out-back'
 	  }
 	  if (typeof newX === 'number') {
-	    duration = duration*Math.abs((newX - x + 50)/(destination - x))
+	    duration = duration*Math.abs((newX - x + 60)/(destination - x))
 	    destination = newX
 	  }
 	  if (x > 0 || x < minX) {
-	    duration = 400
+	    duration = 500
 	    ease = 'out-circ'
 	  }
 	  if (this.type == 'fix') {
