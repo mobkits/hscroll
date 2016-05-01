@@ -59,6 +59,7 @@
     "component-raf": "^1.2.0",
     "component-tween": "^1.2.0",
     "computed-style": "^0.3.0",
+    "debounce": "^1.0.0",
     "has-touch": "^1.0.1",
     "prop-detect": "^1.0.2"
   },
