@@ -2030,6 +2030,7 @@
 	    this.move = null
 	    return
 	  }
+	  e.preventDefault()
 	  this.move(e, touch)
 	}
 	
