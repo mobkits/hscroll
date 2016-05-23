@@ -54,7 +54,6 @@
   },
   "dependencies": {
     "component-emitter": "^1.2.0",
-    "component-event": "^0.1.4",
     "component-events": "^1.0.10",
     "component-raf": "^1.2.0",
     "component-tween": "^1.2.0",
@@ -62,7 +61,8 @@
     "debounce": "^1.0.0",
     "has-touch": "^1.0.1",
     "mouse-wheel": "^1.1.0",
-    "prop-detect": "^1.0.2"
+    "prop-detect": "^1.0.2",
+    "resizelistener": "0.0.3"
   },
   "browser": {
     "iscroll": "iscroll-component",
