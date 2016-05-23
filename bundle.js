@@ -49,7 +49,7 @@
 	var Hscroll = __webpack_require__(22)
 	var detect = __webpack_require__(2)
 	var transform = detect.transform
-	var ontap = __webpack_require__(24)
+	var ontap = __webpack_require__(33)
 	
 	var els = document.querySelectorAll('.hscroll')
 	;[].slice.call(els).forEach(function (el) {
@@ -380,16 +380,17 @@
 	 * @api private
 	 */
 	Iscroll.prototype.momentum = function() {
-	  var deceleration = 0.0008
+	  var deceleration = 0.001
 	  var speed = this.speed
-	  speed = min(speed, 0.6)
+	  speed = min(speed, 2)
 	  var y = this.y
-	  var destination = y + (speed * speed) / (2 * deceleration) * (this.distance < 0 ? -1 : 1)
+	  var rate = (4 - Math.PI)/2
+	  var destination = y + rate * (speed * speed) / (2 * deceleration) * (this.distance < 0 ? -1 : 1)
 	  var duration = speed / deceleration
 	  var ease
 	  var minY = this.minY
 	  if (y > 0 || y < minY) {
-	    duration = 300
+	    duration = 500
 	    ease = 'out-circ'
 	    destination = y > 0 ? 0 : minY
 	  } else if (destination > 0) {
@@ -1853,7 +1854,7 @@
 	handlebar.prototype.resize = function (h) {
 	  var s = this.el.style
 	  s.height = h + 'px'
-	  s.backgroundColor = 'rgba(0,0,0,0.5)'
+	  s.backgroundColor = 'rgba(0,0,0,0.4)'
 	}
 	
 	/**
@@ -1887,7 +1888,6 @@
 /* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var event = __webpack_require__(10)
 	var raf = __webpack_require__(19)
 	var Tween = __webpack_require__(15)
 	var detect = __webpack_require__(2)
@@ -1896,6 +1896,10 @@
 	var events = __webpack_require__(9)
 	var Emitter = __webpack_require__(8)
 	var ComputedStyle = __webpack_require__(23)
+	var hasTouch = __webpack_require__(24)
+	var debounce = __webpack_require__(25)
+	var wheel = __webpack_require__(27)
+	var resize = __webpack_require__(30)
 	
 	/**
 	 * Hscroll constructor
@@ -1919,6 +1923,7 @@
 	  this.threshold = opt.threshold || 200
 	  // minimum moved distance for fast swipe
 	  this.fastThreshold = opt.fastThreshold || 30
+	  this.autoWidth = opt.autoWidth || false
 	  // transformX
 	  this.tx = 0
 	  this.bind()
@@ -1938,21 +1943,24 @@
 	  this.docEvents = events(document, this)
 	
 	  // standard mouse click events
-	  this.events.bind('mousedown', 'ontouchstart')
-	  this.events.bind('mousemove', 'ontouchmove')
-	  this.docEvents.bind('mouseup', 'ontouchend')
+	  if (!hasTouch) {
+	    this.events.bind('mousedown', 'ontouchstart')
+	    this.events.bind('mousemove', 'ontouchmove')
+	    this.docEvents.bind('mouseup', 'ontouchend')
+	    this._wheelHandler = wheel(this.el, this.onwheel.bind(this), false)
+	  } else {
+	    // W3C touch events
+	    this.events.bind('touchstart')
+	    this.events.bind('touchmove')
+	    this.docEvents.bind('touchend')
 	
-	  // W3C touch events
-	  this.events.bind('touchstart')
-	  this.events.bind('touchmove')
-	  this.docEvents.bind('touchend')
+	    // MS IE touch events
+	    this.events.bind('PointerDown', 'ontouchstart')
+	    this.events.bind('PointerMove', 'ontouchmove')
+	    this.docEvents.bind('PointerUp', 'ontouchstart')
+	  }
 	
-	  // MS IE touch events
-	  this.events.bind('PointerDown', 'ontouchstart')
-	  this.events.bind('PointerMove', 'ontouchmove')
-	  this.docEvents.bind('PointerUp', 'ontouchstart')
-	  this._refresh = this.refresh.bind(this)
-	  event.bind(window, 'orientationchange', this._refresh)
+	  this.unbindResize = resize(this.el, debounce(this.refresh.bind(this), 100))
 	}
 	
 	Hscroll.prototype.getTouch = function (e) {
@@ -1974,6 +1982,10 @@
 	
 	Hscroll.prototype.ontouchstart = function(e){
 	  if (this.animating) this.tween.stop()
+	  if (e.target.tagName.toLowerCase() == 'input') {
+	    if (/^(text|password|tel|search|number|email|url)$/.test(e.target.type)
+	    && e.target.value) return
+	  }
 	  var touch = this.getTouch(e)
 	  if (!touch) return
 	  this.speed = 0
@@ -1997,7 +2009,6 @@
 	    var py = self.previous ? self.previous.y : sy
 	    var leftOrRight = Math.abs(cx - px) > Math.abs(cy - py)
 	    if (!leftOrRight) return
-	    e.preventDefault()
 	    e.stopPropagation()
 	    self.calcuteSpeed(cx, cy)
 	    var tx = self.down.tx + cx - sx
@@ -2055,6 +2066,20 @@
 	  this.down = this.previous = null
 	}
 	
+	Hscroll.prototype.onwheel = function (dx, dy) {
+	  if (Math.abs(dy) > Math.abs(dx)) return
+	  this.stop()
+	  if (this.ts) {
+	    var speed = Math.abs(dx)/(Date.now() - this.ts)
+	    if (speed > 2) {
+	      if (!this.animating) {
+	        if (this.type == 'swipe') this.swipe(dx < 0 ? 1 : -1)
+	      }
+	    }
+	  }
+	  this.ts = Date.now()
+	}
+	
 	Hscroll.prototype.momentum = function () {
 	  var deceleration = 0.001
 	  var speed = this.speed
@@ -2098,7 +2123,8 @@
 	Hscroll.prototype.unbind = function(){
 	  this.events.unbind()
 	  this.docEvents.unbind()
-	  event.unbind(window, 'orientationchange', this._refresh)
+	  this.unbindResize()
+	  if (this._wheelHandler) this.el.removeEventListener('wheel', this._wheelHandler)
 	}
 	
 	
@@ -2265,13 +2291,14 @@
 	  var parent = this.wrapper
 	  this.viewWidth = this.el.getBoundingClientRect().width
 	  var items = parent.children
-	  this.itemWidth = items[0].getBoundingClientRect().width
+	  this.itemWidth = this.autoWidth ? this.viewWidth:items[0].getBoundingClientRect().width
 	  var rect
 	  var h = 0
 	  // set height and width
 	  for (var i = 0, l = items.length; i < l; i++) {
 	    rect = items[i].getBoundingClientRect()
 	    h = Math.max(h, rect.height)
+	    if (this.autoWidth) items[i].width = this.viewWidth + 'px'
 	  }
 	  var pb = numberStyle(this.wrapper, 'padding-bottom')
 	  parent.style.height = (h + ( pb ? pb : 0)) + 'px'
@@ -2413,10 +2440,343 @@
 
 /***/ },
 /* 24 */
+/***/ function(module, exports) {
+
+	/* WEBPACK VAR INJECTION */(function(global) {module.exports = 'ontouchstart' in global || (global.DocumentTouch && document instanceof DocumentTouch)
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
+
+/***/ },
+/* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var hasTouch = __webpack_require__(25)
-	var tap = __webpack_require__(26)
+	
+	/**
+	 * Module dependencies.
+	 */
+	
+	var now = __webpack_require__(26);
+	
+	/**
+	 * Returns a function, that, as long as it continues to be invoked, will not
+	 * be triggered. The function will be called after it stops being called for
+	 * N milliseconds. If `immediate` is passed, trigger the function on the
+	 * leading edge, instead of the trailing.
+	 *
+	 * @source underscore.js
+	 * @see http://unscriptable.com/2009/03/20/debouncing-javascript-methods/
+	 * @param {Function} function to wrap
+	 * @param {Number} timeout in ms (`100`)
+	 * @param {Boolean} whether to execute at the beginning (`false`)
+	 * @api public
+	 */
+	
+	module.exports = function debounce(func, wait, immediate){
+	  var timeout, args, context, timestamp, result;
+	  if (null == wait) wait = 100;
+	
+	  function later() {
+	    var last = now() - timestamp;
+	
+	    if (last < wait && last > 0) {
+	      timeout = setTimeout(later, wait - last);
+	    } else {
+	      timeout = null;
+	      if (!immediate) {
+	        result = func.apply(context, args);
+	        if (!timeout) context = args = null;
+	      }
+	    }
+	  };
+	
+	  return function debounced() {
+	    context = this;
+	    args = arguments;
+	    timestamp = now();
+	    var callNow = immediate && !timeout;
+	    if (!timeout) timeout = setTimeout(later, wait);
+	    if (callNow) {
+	      result = func.apply(context, args);
+	      context = args = null;
+	    }
+	
+	    return result;
+	  };
+	};
+
+
+/***/ },
+/* 26 */
+/***/ function(module, exports) {
+
+	module.exports = Date.now || now
+	
+	function now() {
+	    return new Date().getTime()
+	}
+
+
+/***/ },
+/* 27 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+	
+	var toPX = __webpack_require__(28)
+	
+	module.exports = mouseWheelListen
+	
+	function mouseWheelListen(element, callback, noScroll) {
+	  if(typeof element === 'function') {
+	    noScroll = !!callback
+	    callback = element
+	    element = window
+	  }
+	  var lineHeight = toPX('ex', element)
+	  var listener = function(ev) {
+	    if(noScroll) {
+	      ev.preventDefault()
+	    }
+	    var dx = ev.deltaX || 0
+	    var dy = ev.deltaY || 0
+	    var dz = ev.deltaZ || 0
+	    var mode = ev.deltaMode
+	    var scale = 1
+	    switch(mode) {
+	      case 1:
+	        scale = lineHeight
+	      break
+	      case 2:
+	        scale = window.innerHeight
+	      break
+	    }
+	    dx *= scale
+	    dy *= scale
+	    dz *= scale
+	    if(dx || dy || dz) {
+	      return callback(dx, dy, dz)
+	    }
+	  }
+	  element.addEventListener('wheel', listener)
+	  return listener
+	}
+
+
+/***/ },
+/* 28 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict'
+	
+	var parseUnit = __webpack_require__(29)
+	
+	module.exports = toPX
+	
+	var PIXELS_PER_INCH = 96
+	
+	function getPropertyInPX(element, prop) {
+	  var parts = parseUnit(getComputedStyle(element).getPropertyValue(prop))
+	  return parts[0] * toPX(parts[1], element)
+	}
+	
+	//This brutal hack is needed
+	function getSizeBrutal(unit, element) {
+	  var testDIV = document.createElement('div')
+	  testDIV.style['font-size'] = '128' + unit
+	  element.appendChild(testDIV)
+	  var size = getPropertyInPX(testDIV, 'font-size') / 128
+	  element.removeChild(testDIV)
+	  return size
+	}
+	
+	function toPX(str, element) {
+	  element = element || document.body
+	  str = (str || 'px').trim().toLowerCase()
+	  if(element === window || element === document) {
+	    element = document.body 
+	  }
+	  switch(str) {
+	    case '%':  //Ambiguous, not sure if we should use width or height
+	      return element.clientHeight / 100.0
+	    case 'ch':
+	    case 'ex':
+	      return getSizeBrutal(str, element)
+	    case 'em':
+	      return getPropertyInPX(element, 'font-size')
+	    case 'rem':
+	      return getPropertyInPX(document.body, 'font-size')
+	    case 'vw':
+	      return window.innerWidth/100
+	    case 'vh':
+	      return window.innerHeight/100
+	    case 'vmin':
+	      return Math.min(window.innerWidth, window.innerHeight) / 100
+	    case 'vmax':
+	      return Math.max(window.innerWidth, window.innerHeight) / 100
+	    case 'in':
+	      return PIXELS_PER_INCH
+	    case 'cm':
+	      return PIXELS_PER_INCH / 2.54
+	    case 'mm':
+	      return PIXELS_PER_INCH / 25.4
+	    case 'pt':
+	      return PIXELS_PER_INCH / 72
+	    case 'pc':
+	      return PIXELS_PER_INCH / 6
+	  }
+	  return 1
+	}
+
+/***/ },
+/* 29 */
+/***/ function(module, exports) {
+
+	module.exports = function parseUnit(str, out) {
+	    if (!out)
+	        out = [ 0, '' ]
+	
+	    str = String(str)
+	    var num = parseFloat(str, 10)
+	    out[0] = num
+	    out[1] = str.match(/[\d.\-\+]*\s*(.*)/)[1] || ''
+	    return out
+	}
+
+/***/ },
+/* 30 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var attachEvent = document.attachEvent
+	var once = __webpack_require__(31)
+	var raf = __webpack_require__(19)
+	
+	var cancelFrame = (function(){
+	  var cancel = window.cancelAnimationFrame || window.mozCancelAnimationFrame || window.webkitCancelAnimationFrame ||
+	          window.clearTimeout
+	  return function(id){ return cancel(id); }
+	})()
+	
+	function resizeListener(e){
+	  var win = e.target || e.srcElement
+	  if (win.__resizeRAF__) cancelFrame(win.__resizeRAF__)
+	  win.__resizeRAF__ = raf(function(){
+	    var trigger = win.__resizeTrigger__
+	    trigger.__resizeListeners__.forEach(function(fn){
+	      fn.call(trigger, e)
+	    })
+	  })
+	}
+	
+	function objectLoad(e){
+	  this.contentDocument.defaultView.__resizeTrigger__ = this.__resizeElement__
+	  this.contentDocument.defaultView.addEventListener('resize', resizeListener)
+	}
+	
+	function removeListener (element, fn) {
+	  var trigger = element.__resizeTrigger__
+	  element.__resizeListeners__.splice(element.__resizeListeners__.indexOf(fn), 1)
+	  if (!element.__resizeListeners__.length) {
+	    if (attachEvent) element.detachEvent('onresize', resizeListener)
+	    else if (trigger.contentDocument) {
+	      trigger.contentDocument.defaultView.removeEventListener('resize', resizeListener)
+	      element.__resizeTrigger__ = !element.removeChild(element.__resizeTrigger__)
+	    }
+	  }
+	}
+	module.exports = function(element, fn){
+	  if (!element.__resizeListeners__) {
+	    element.__resizeListeners__ = []
+	    if (attachEvent) {
+	      element.__resizeTrigger__ = element
+	      element.attachEvent('onresize', resizeListener)
+	    }
+	    else {
+	      if (getComputedStyle(element).position == 'static') element.style.position = 'relative'
+	      var obj = element.__resizeTrigger__ = document.createElement('object');
+	      obj.setAttribute('style', 'display: block; position: absolute; top: 0; left: 0; height: 100%; width: 100%; overflow: hidden; pointer-events: none; z-index: -1;')
+	      obj.__resizeElement__ = element
+	      obj.onload = objectLoad
+	      obj.type = 'text/html'
+	      obj.data = 'about:blank'
+	      element.appendChild(obj)
+	    }
+	  }
+	  element.__resizeListeners__.push(fn)
+	  return once(removeListener.bind(null, element, fn))
+	}
+
+
+/***/ },
+/* 31 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var wrappy = __webpack_require__(32)
+	module.exports = wrappy(once)
+	
+	once.proto = once(function () {
+	  Object.defineProperty(Function.prototype, 'once', {
+	    value: function () {
+	      return once(this)
+	    },
+	    configurable: true
+	  })
+	})
+	
+	function once (fn) {
+	  var f = function () {
+	    if (f.called) return f.value
+	    f.called = true
+	    return f.value = fn.apply(this, arguments)
+	  }
+	  f.called = false
+	  return f
+	}
+
+
+/***/ },
+/* 32 */
+/***/ function(module, exports) {
+
+	// Returns a wrapper function that returns a wrapped callback
+	// The wrapper function should do some stuff, and return a
+	// presumably different callback function.
+	// This makes sure that own properties are retained, so that
+	// decorations and such are not lost along the way.
+	module.exports = wrappy
+	function wrappy (fn, cb) {
+	  if (fn && cb) return wrappy(fn)(cb)
+	
+	  if (typeof fn !== 'function')
+	    throw new TypeError('need wrapper function')
+	
+	  Object.keys(fn).forEach(function (k) {
+	    wrapper[k] = fn[k]
+	  })
+	
+	  return wrapper
+	
+	  function wrapper() {
+	    var args = new Array(arguments.length)
+	    for (var i = 0; i < args.length; i++) {
+	      args[i] = arguments[i]
+	    }
+	    var ret = fn.apply(this, args)
+	    var cb = args[args.length-1]
+	    if (typeof ret === 'function' && ret !== cb) {
+	      Object.keys(cb).forEach(function (k) {
+	        ret[k] = cb[k]
+	      })
+	    }
+	    return ret
+	  }
+	}
+
+
+/***/ },
+/* 33 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var hasTouch = __webpack_require__(24)
+	var tap = __webpack_require__(34)
 	var event = __webpack_require__(10)
 	
 	function now() {
@@ -2446,14 +2806,7 @@
 
 
 /***/ },
-/* 25 */
-/***/ function(module, exports) {
-
-	/* WEBPACK VAR INJECTION */(function(global) {module.exports = 'ontouchstart' in global || (global.DocumentTouch && document instanceof DocumentTouch)
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
-
-/***/ },
-/* 26 */
+/* 34 */
 /***/ function(module, exports) {
 
 	var endEvents = [
