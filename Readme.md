@@ -53,6 +53,8 @@ Create Hscroll with element and optional option.
 * `opt.duration` animation duration in ms, default 300.
 * `opt.threshold` maximun duration in ms for fast swipe.
 * `opt.fastThreshold` minimum moved distance for fast swipe.
+* `opt.autoWidth` set item width to swiper width.
+* `opt.autoHeight` set swiper height to be max item height.
 
 ### .unbind()
 
