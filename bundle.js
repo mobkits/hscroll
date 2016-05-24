@@ -1924,6 +1924,7 @@
 	  // minimum moved distance for fast swipe
 	  this.fastThreshold = opt.fastThreshold || 30
 	  this.autoWidth = opt.autoWidth || false
+	  this.autoHeight = opt.autoHeight || false
 	  // transformX
 	  this.tx = 0
 	  this.bind()
@@ -2170,7 +2171,9 @@
 	  curr = Math.max(0, curr)
 	  curr = Math.min(this.itemCount - 1, curr)
 	  var self = this
-	  return this.animate(- curr*this.viewWidth).then(function () {
+	  var x = - curr*this.viewWidth
+	  if (x === this.tx) return Promise.resolve(null)
+	  return this.animate(x).then(function () {
 	    self.emit('show', curr)
 	  })
 	}
@@ -2223,7 +2226,8 @@
 	 *
 	 * @public
 	 */
-	Hscroll.prototype.play = function () {
+	Hscroll.prototype.play = function (force) {
+	  if (this.playing && !force) return
 	  this.playing = true
 	  setTimeout(function () {
 	    if (!this.playing) return
@@ -2238,7 +2242,7 @@
 	    }
 	    var self = this
 	    p.then(function () {
-	      self.play()
+	      self.play(true)
 	    })
 	  }.bind(this), this.interval)
 	}
@@ -2295,14 +2299,16 @@
 	  this.itemWidth = this.autoWidth ? this.viewWidth:items[0].getBoundingClientRect().width
 	  var rect
 	  var h = 0
-	  // set height and width
-	  for (var i = 0, l = items.length; i < l; i++) {
-	    rect = items[i].getBoundingClientRect()
-	    h = Math.max(h, rect.height)
-	    if (this.autoWidth) items[i].width = this.viewWidth + 'px'
-	  }
 	  var pb = numberStyle(this.wrapper, 'padding-bottom')
-	  parent.style.height = (h + ( pb ? pb : 0)) + 'px'
+	  if (this.autoWidth || this.autoHeight) {
+	    // set height and width
+	    for (var i = 0, l = items.length; i < l; i++) {
+	      rect = items[i].getBoundingClientRect()
+	      h = Math.max(h, rect.height)
+	      if (this.autoWidth) items[i].style.width = this.viewWidth + 'px'
+	    }
+	  }
+	  if (this.autoHeight) parent.style.height = (h + ( pb ? pb : 0)) + 'px'
 	  var width = items.length * this.itemWidth
 	  parent.style.width =  width + 'px'
 	  if (this.type == 'swipe') {
