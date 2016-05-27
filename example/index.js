@@ -6,7 +6,7 @@ var transform = detect.transform
 var ontap = require('ontap')
 
 var els = document.querySelectorAll('.hscroll')
-;[].slice.call(els).forEach(function (el) {
+;[].slice.call(els).forEach(function (el, i) {
   var type
   if (el.classList.contains('swipe')) type = 'swipe'
   if (el.classList.contains('fix')) type = 'fix'
