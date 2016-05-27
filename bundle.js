@@ -52,7 +52,7 @@
 	var ontap = __webpack_require__(33)
 	
 	var els = document.querySelectorAll('.hscroll')
-	;[].slice.call(els).forEach(function (el) {
+	;[].slice.call(els).forEach(function (el, i) {
 	  var type
 	  if (el.classList.contains('swipe')) type = 'swipe'
 	  if (el.classList.contains('fix')) type = 'fix'
@@ -2057,7 +2057,7 @@
 	      (t - this.down.at) < this.threshold ) {
 	    // fast swipe
 	    var dir = x > this.down.x ? 1 : -1
-	    this.swipe(dir)
+	    this.show(this.curr() - dir)
 	  } else {
 	    if (this.type == 'swipe') {
 	      this.reset()
@@ -2141,7 +2141,7 @@
 	  if (this.type == 'swipe') {
 	    return this.swipe(1)
 	  } else {
-	    return this.show(this.curr() - 1)
+	    return this.show(this.iterate(1))
 	  }
 	}
 	
@@ -2156,26 +2156,36 @@
 	  if (this.type == 'swipe') {
 	    return this.swipe(-1)
 	  } else {
-	    return this.show(this.curr() + 1)
+	    return this.show(this.iterate(-1))
 	  }
 	}
 	
 	/**
-	 * swipe to previous/next piece
+	 * Swipe to previous/next piece
 	 *
 	 * @public
 	 * @param {Number} dir 1 or -1
 	 */
 	Hscroll.prototype.swipe = function (dir) {
-	  var curr = this.curr() - dir
-	  curr = Math.max(0, curr)
-	  curr = Math.min(this.itemCount - 1, curr)
+	  var to = this.iterate(dir)
 	  var self = this
-	  var x = - curr*this.viewWidth
+	  var x = - to*this.viewWidth
 	  if (x === this.tx) return Promise.resolve(null)
 	  return this.animate(x).then(function () {
-	    self.emit('show', curr)
+	    self.emit('show', to)
 	  })
+	}
+	
+	Hscroll.prototype.iterate = function (dir) {
+	  var to = this.curr() - dir
+	  var max = this.type == 'swipe' ? this.itemCount - 1
+	            : this.itemCount - Math.floor(this.viewWidth/this.itemWidth)
+	  if (to < 0) {
+	    to = max
+	  } else if (to > max) {
+	    to = 0
+	  }
+	  return to
 	}
 	
 	/**
@@ -2196,6 +2206,11 @@
 	  tx = Math.max(tx, limit.min)
 	  if (tx == this.tx) return Promise.resolve(null)
 	  var self = this
+	  if (duration === 0) {
+	    this.setTransform(tx)
+	    this.emit('show', n)
+	    return Promise.resolve(null)
+	  }
 	  return this.animate(tx, duration, ease).then(function () {
 	    self.emit('show', n)
 	  })
@@ -2226,24 +2241,20 @@
 	 *
 	 * @public
 	 */
-	Hscroll.prototype.play = function (force) {
-	  if (this.playing && !force) return
+	Hscroll.prototype.play = function () {
+	  if (this.playing) return
 	  this.playing = true
-	  setTimeout(function () {
+	  if (this.inter != null) clearInterval(this.inter)
+	  this.inter = setInterval(function () {
 	    if (!this.playing) return
 	    var curr = this.curr()
-	    var p
 	    var max = this.type == 'swipe' ? this.itemCount - 1
 	              : this.itemCount - Math.floor(this.viewWidth/this.itemWidth)
 	    if (curr >= max) {
-	      p = this.first()
+	      this.first()
 	    } else {
-	      p = this.next()
+	      this.next()
 	    }
-	    var self = this
-	    p.then(function () {
-	      self.play(true)
-	    })
 	  }.bind(this), this.interval)
 	}
 	
@@ -2254,6 +2265,7 @@
 	 */
 	Hscroll.prototype.stop = function () {
 	  this.playing = false
+	  window.clearInterval(this.inter)
 	}
 	
 	/**
