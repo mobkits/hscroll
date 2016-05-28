@@ -96,12 +96,13 @@ p {
 }
 #tab .body .scrollable{
   position: relative;
-  flex: 0 0 100vw;
+  float: left;
   overflow-y: scroll;
   user-select: none;
   -webkit-overflow-scrolling: touch;
 }
 #tab .bottom {
+  pointer-events: none;
   position: absolute;
   left: 0;
   right: 0;

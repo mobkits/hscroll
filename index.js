@@ -51,7 +51,8 @@ var els = document.querySelectorAll('.hscroll')
   })
   var tab = document.getElementById('tab')
   var scroll = new Hscroll(tab.querySelector('.body'), {
-    type: 'swipe'
+    type: 'swipe',
+    autoWidth: true
   })
   var tabs = tab.querySelectorAll('.header li')
   var line = tab.querySelector('.header .line')

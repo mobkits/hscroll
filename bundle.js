@@ -97,7 +97,8 @@
 	  })
 	  var tab = document.getElementById('tab')
 	  var scroll = new Hscroll(tab.querySelector('.body'), {
-	    type: 'swipe'
+	    type: 'swipe',
+	    autoWidth: true
 	  })
 	  var tabs = tab.querySelectorAll('.header li')
 	  var line = tab.querySelector('.header .line')
@@ -2113,7 +2114,8 @@
 	    var width = this.itemWidth
 	    destination = Math.round(destination/width)*width
 	  }
-	  return this.animate(destination, duration, ease)
+	  this.animate(destination, duration, ease)
+	  return
 	}
 	
 	/**
@@ -2141,7 +2143,7 @@
 	  if (this.type == 'swipe') {
 	    return this.swipe(1)
 	  } else {
-	    return this.show(this.iterate(1))
+	    return this.show(this.toFixed(1))
 	  }
 	}
 	
@@ -2156,7 +2158,7 @@
 	  if (this.type == 'swipe') {
 	    return this.swipe(-1)
 	  } else {
-	    return this.show(this.iterate(-1))
+	    return this.show(this.toFixed(-1))
 	  }
 	}
 	
@@ -2167,16 +2169,17 @@
 	 * @param {Number} dir 1 or -1
 	 */
 	Hscroll.prototype.swipe = function (dir) {
-	  var to = this.iterate(dir)
+	  var to = this.toFixed(dir)
 	  var self = this
 	  var x = - to*this.viewWidth
 	  if (x === this.tx) return Promise.resolve(null)
-	  return this.animate(x).then(function () {
+	  return this.animate(x).then(function (stopped) {
+	    if (stopped) return
 	    self.emit('show', to)
 	  })
 	}
 	
-	Hscroll.prototype.iterate = function (dir) {
+	Hscroll.prototype.toFixed = function (dir) {
 	  var to = this.curr() - dir
 	  var max = this.type == 'swipe' ? this.itemCount - 1
 	            : this.itemCount - Math.floor(this.viewWidth/this.itemWidth)
@@ -2200,7 +2203,7 @@
 	  if (this.animating) this.tween.stop()
 	  var width = this.type == 'swipe' ? this.viewWidth : this.itemWidth
 	  n = Math.max(n , 0)
-	  n = Math.min(n, this.itemCount)
+	  n = Math.min(n, this.itemCount - 1)
 	  var tx = - n * width
 	  var limit = this.getLimitation()
 	  tx = Math.max(tx, limit.min)
@@ -2211,7 +2214,8 @@
 	    this.emit('show', n)
 	    return Promise.resolve(null)
 	  }
-	  return this.animate(tx, duration, ease).then(function () {
+	  return this.animate(tx, duration, ease).then(function (stopped) {
+	    if (stopped) return
 	    self.emit('show', n)
 	  })
 	}
@@ -2389,7 +2393,7 @@
 	    tween.on('end', function(){
 	      animate = function(){} // eslint-disable-line
 	      self.animating = false
-	      resolve()
+	      resolve(tween.stopped)
 	    })
 	  })
 	
