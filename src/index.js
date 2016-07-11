@@ -241,6 +241,7 @@ class Hscroll extends Emitter {
 
   unbind() {
     this.emit('unbind')
+    this.stop()
     this.events.unbind()
     this.docEvents.unbind()
     this.unbindResize()
