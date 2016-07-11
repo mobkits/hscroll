@@ -4,8 +4,11 @@ Make element horizon scrollable.
 
 See [example](https://chemzqm.github.io/hscroll) with your phone.
 
+Works on IE >= 8 and all modern browsers.
+
 ## Features
 
+* Support both touch and mouse events.
 * Swipe and fix mode.
 * Refresh on dom size changes.
 * Works fine with vertical scroll component, like [iscroll](https://github.com/chemzqm/iscroll).
@@ -40,7 +43,7 @@ new Hscroll(el, {
 
 ## Event
 
-* `show` emit with the number of actived item index.
+* `show` emitted with the number of actived item index.
 
 ## API
 
@@ -48,7 +51,7 @@ new Hscroll(el, {
 
 Create Hscroll with element and optional option.
 * `el` the element contains a wrapper child.
-* `opt.type` could be `swipe` or `fix`.
+* `opt.type` default `normal`, could be `swipe` or `fix`.
 * `opt.interval` interval of `play()` in ms, default 1000.
 * `opt.duration` animation duration in ms, default 300.
 * `opt.threshold` maximun duration in ms for fast swipe.
