@@ -44,6 +44,7 @@ new Hscroll(el, {
 ## Event
 
 * `show` emitted with the number of actived item index.
+* `unbind` emitted when unbind called.
 
 ## API
 
