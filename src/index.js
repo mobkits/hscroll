@@ -56,7 +56,7 @@ class Hscroll extends Emitter {
       this.events.bind('mousemove', 'ontouchmove')
       this.events.bind('mouseup', 'ontouchend')
       this.docEvents.bind('mouseup', 'ontouchend')
-      this._wheelUnbind = wheel(this.el, this.onwheel.bind(this), false)
+      this._wheelUnbind = wheel(this.el, this.onwheel.bind(this), true)
     } else if (hasTouch) {
       // W3C touch events
       this.events.bind('touchstart')
