@@ -231,6 +231,9 @@ footer {
     width: 760px;
     margin: 0 auto;
   }
+  .container .item {
+    width: 200px;
+  }
   #carousel img {
     width: 760px;
   }
