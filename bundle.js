@@ -2677,7 +2677,8 @@
 	    if (dx > 5) {
 	      e.stopPropagation ? e.stopPropagation() : e.cancelBubble = true;
 	      e.stopImmediatePropagation ? e.stopImmediatePropagation() : void 0;
-	    } else {
+	    }
+	    if (Math.sqrt(dx * dx + dy * dy) < 5) {
 	      this.emit('select', this.curr());
 	    }
 	    if (this.type == 'swipe' && dx > dy && dx > this.fastThreshold && t - this.down.at < this.threshold) {
