@@ -56,7 +56,7 @@ class Hscroll extends Emitter {
       this.events.bind('mousemove', 'ontouchmove')
       this.events.bind('mouseup', 'ontouchend')
       this.docEvents.bind('mouseup', 'ontouchend')
-      this._wheelUnbind = wheel(this.el, this.onwheel.bind(this), true)
+      this._wheelUnbind = wheel(this.el, this.onwheel.bind(this), false)
     } else if (hasTouch) {
       // W3C touch events
       this.events.bind('touchstart')
@@ -180,8 +180,9 @@ class Hscroll extends Emitter {
     this.down = this.previous = null
   }
 
-  onwheel(dx, dy) {
+  onwheel(dx, dy, dz, e) {
     if (Math.abs(dy) > Math.abs(dx)) return
+    e.preventDefault()
     this.stop()
     if (this.ts && !this.animating) {
       const speed = Math.abs(dx)/(Date.now() - this.ts)
