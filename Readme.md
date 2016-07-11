@@ -45,6 +45,7 @@ new Hscroll(el, {
 
 * `show` emitted with the number of actived item index.
 * `unbind` emitted when unbind called.
+* `select` emitted with item index on item tap (not emmited when moved)
 
 ## API
 

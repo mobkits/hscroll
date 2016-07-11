@@ -1,6 +1,6 @@
 {
   "name": "hscroll",
-  "version": "0.4.7",
+  "version": "1.0.0",
   "description": "make element horizon scroll",
   "main": "dest/index.js",
   "scripts": {

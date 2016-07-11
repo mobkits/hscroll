@@ -167,6 +167,9 @@ p {
   width: 100%;
   overflow: hidden;
 }
+#carousel img {
+  -webkit-user-drag: none;
+}
 #carousel .imgs ul {
   padding: 0;
   margin: 0;
