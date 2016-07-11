@@ -73,7 +73,7 @@
     "debounce": "^1.0.0",
     "has-touch": "^1.0.1",
     "mouse-wheel-event": "^1.2.3",
-    "prop-detect": "^1.0.2",
+    "prop-detect": "^1.1.0",
     "resizelistener": "0.0.3"
   },
   "browser": {
