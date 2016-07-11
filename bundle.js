@@ -2552,7 +2552,7 @@
 	      this.events.bind('mousemove', 'ontouchmove');
 	      this.events.bind('mouseup', 'ontouchend');
 	      this.docEvents.bind('mouseup', 'ontouchend');
-	      this._wheelUnbind = (0, _mouseWheelEvent2['default'])(this.el, this.onwheel.bind(this), true);
+	      this._wheelUnbind = (0, _mouseWheelEvent2['default'])(this.el, this.onwheel.bind(this), false);
 	    } else if (_hasTouch2['default']) {
 	      // W3C touch events
 	      this.events.bind('touchstart');
@@ -2675,8 +2675,9 @@
 	    this.down = this.previous = null;
 	  };
 	
-	  Hscroll.prototype.onwheel = function onwheel(dx, dy) {
+	  Hscroll.prototype.onwheel = function onwheel(dx, dy, dz, e) {
 	    if (Math.abs(dy) > Math.abs(dx)) return;
+	    e.preventDefault ? e.preventDefault() : e.returnValue = false;
 	    this.stop();
 	    if (this.ts && !this.animating) {
 	      var speed = Math.abs(dx) / (Date.now() - this.ts);
