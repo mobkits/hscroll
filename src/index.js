@@ -163,7 +163,8 @@ class Hscroll extends Emitter {
     if (dx > 5) {
       e.stopPropagation()
       e.stopImmediatePropagation()
-    } else {
+    }
+    if (Math.sqrt(dx*dx + dy*dy) < 5) {
       this.emit('select', this.curr())
     }
     if (this.type == 'swipe' &&
