@@ -429,7 +429,7 @@
 	
 	  this.direction = y > this.y ? -1 : 1
 	
-	  easing = easing || 'out-cube'
+	  easing = easing || 'out-circ'
 	  var tween = this.tween = Tween({
 	      y: this.y
 	    })
@@ -2550,8 +2550,9 @@
 	    if (!_hasTouch2['default'] && document.addEventListener) {
 	      this.events.bind('mousedown', 'ontouchstart');
 	      this.events.bind('mousemove', 'ontouchmove');
+	      this.events.bind('mouseup', 'ontouchend');
 	      this.docEvents.bind('mouseup', 'ontouchend');
-	      this._wheelUnbind = (0, _mouseWheelEvent2['default'])(this.el, this.onwheel.bind(this), false);
+	      this._wheelUnbind = (0, _mouseWheelEvent2['default'])(this.el, this.onwheel.bind(this), true);
 	    } else if (_hasTouch2['default']) {
 	      // W3C touch events
 	      this.events.bind('touchstart');
@@ -2651,12 +2652,15 @@
 	    this.move = null;
 	    var touch = this.getTouch(e);
 	    if (!touch) return;
-	    e.stopPropagation ? e.stopPropagation() : e.cancelBubble = true;
 	    var t = Date.now();
 	    var x = touch.pageX;
 	    var y = touch.pageY;
 	    var dx = Math.abs(x - this.down.x);
 	    var dy = Math.abs(y - this.down.y);
+	    if (dx > 5) {
+	      e.stopPropagation ? e.stopPropagation() : e.cancelBubble = true;
+	      e.stopImmediatePropagation ? e.stopImmediatePropagation() : void 0;
+	    }
 	    if (this.type == 'swipe' && dx > dy && dx > this.fastThreshold && t - this.down.at < this.threshold) {
 	      // fast swipe
 	      var dir = x > this.down.x ? 1 : -1;
