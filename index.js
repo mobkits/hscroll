@@ -21,7 +21,7 @@ var els = document.querySelectorAll('.hscroll')
   var el = document.querySelector('#carousel .imgs')
   var scroll = new Hscroll(el, {
     type: 'swipe',
-    interval: 2000
+    interval: 5000
   })
   event.bind(el, 'touchstart', function () {
     scroll.stop()

@@ -47,11 +47,11 @@
 	'use strict';
 	
 	var Iscroll = __webpack_require__(1);
-	var event = __webpack_require__(11);
-	var Hscroll = __webpack_require__(32);
+	var event = __webpack_require__(10);
+	var Hscroll = __webpack_require__(31);
 	var detect = __webpack_require__(3);
 	var transform = detect.transform;
-	var ontap = __webpack_require__(33);
+	var ontap = __webpack_require__(32);
 	
 	var els = document.querySelectorAll('.hscroll');[].slice.call(els).forEach(function (el, i) {
 	  var type;
@@ -66,7 +66,7 @@
 	  var el = document.querySelector('#carousel .imgs');
 	  var scroll = new Hscroll(el, {
 	    type: 'swipe',
-	    interval: 2000
+	    interval: 5000
 	  });
 	  event.bind(el, 'touchstart', function () {
 	    scroll.stop();
@@ -127,17 +127,17 @@
 
 	var CustomEvent = __webpack_require__(2);
 	var detect = __webpack_require__(3)
-	var Emitter = __webpack_require__(9)
-	var events = __webpack_require__(10)
-	var Tween = __webpack_require__(16)
-	var raf = __webpack_require__(21)
-	var throttle = __webpack_require__(22)
-	var debounce = __webpack_require__(23)
-	var Handlebar = __webpack_require__(25)
-	var wheel = __webpack_require__(26)
-	var hasTouch = __webpack_require__(27)
-	var computedStyle = __webpack_require__(28)
-	var resizelistener = __webpack_require__(29)
+	var Emitter = __webpack_require__(8)
+	var events = __webpack_require__(9)
+	var Tween = __webpack_require__(15)
+	var raf = __webpack_require__(20)
+	var throttle = __webpack_require__(21)
+	var debounce = __webpack_require__(22)
+	var Handlebar = __webpack_require__(24)
+	var wheel = __webpack_require__(25)
+	var hasTouch = __webpack_require__(26)
+	var computedStyle = __webpack_require__(27)
+	var resizelistener = __webpack_require__(28)
 	var touchAction = detect.touchAction
 	var transform = detect.transform
 	var has3d = detect.has3d
@@ -627,15 +627,62 @@
 /* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
+	var transform = null
+	;(function () {
+	  var styles = [
+	    'webkitTransform',
+	    'MozTransform',
+	    'msTransform',
+	    'OTransform',
+	    'transform'
+	  ];
+	
+	  var el = document.createElement('p');
+	
+	  for (var i = 0; i < styles.length; i++) {
+	    if (null != el.style[styles[i]]) {
+	      transform = styles[i];
+	      break;
+	    }
+	  }
+	})()
+	
+	/**
+	 * Transition-end mapping
+	 */
+	var transitionEnd = null
+	;(function () {
+	  var map = {
+	    'WebkitTransition' : 'webkitTransitionEnd',
+	    'MozTransition' : 'transitionend',
+	    'OTransition' : 'oTransitionEnd',
+	    'msTransition' : 'MSTransitionEnd',
+	    'transition' : 'transitionend'
+	  };
+	
+	  /**
+	  * Expose `transitionend`
+	  */
+	
+	  var el = document.createElement('p');
+	
+	  for (var transition in map) {
+	    if (null != el.style[transition]) {
+	      transitionEnd = map[transition];
+	      break;
+	    }
+	  }
+	})()
+	
+	exports.transitionend = transitionEnd
+	
 	exports.transition = __webpack_require__(4)
 	
-	exports.transform = __webpack_require__(5)
+	exports.transform = transform
 	
-	exports.touchAction = __webpack_require__(6)
+	exports.touchAction = __webpack_require__(5)
 	
-	exports.transitionend = __webpack_require__(7)
-	
-	exports.has3d = __webpack_require__(8)
+	exports.has3d = __webpack_require__(6)
 
 
 /***/ },
@@ -669,31 +716,6 @@
 /***/ function(module, exports) {
 
 	
-	var styles = [
-	  'webkitTransform',
-	  'MozTransform',
-	  'msTransform',
-	  'OTransform',
-	  'transform'
-	];
-	
-	var el = document.createElement('p');
-	var style;
-	
-	for (var i = 0; i < styles.length; i++) {
-	  style = styles[i];
-	  if (null != el.style[style]) {
-	    module.exports = style;
-	    break;
-	  }
-	}
-
-
-/***/ },
-/* 6 */
-/***/ function(module, exports) {
-
-	
 	/**
 	 * Module exports.
 	 */
@@ -716,41 +738,11 @@
 
 
 /***/ },
-/* 7 */
-/***/ function(module, exports) {
-
-	/**
-	 * Transition-end mapping
-	 */
-	
-	var map = {
-	  'WebkitTransition' : 'webkitTransitionEnd',
-	  'MozTransition' : 'transitionend',
-	  'OTransition' : 'oTransitionEnd',
-	  'msTransition' : 'MSTransitionEnd',
-	  'transition' : 'transitionend'
-	};
-	
-	/**
-	 * Expose `transitionend`
-	 */
-	
-	var el = document.createElement('p');
-	
-	for (var transition in map) {
-	  if (null != el.style[transition]) {
-	    module.exports = map[transition];
-	    break;
-	  }
-	}
-
-
-/***/ },
-/* 8 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	
-	var prop = __webpack_require__(5);
+	var prop = __webpack_require__(7);
 	
 	// IE <=8 doesn't have `getComputedStyle`
 	if (!prop || !window.getComputedStyle) {
@@ -776,7 +768,32 @@
 
 
 /***/ },
-/* 9 */
+/* 7 */
+/***/ function(module, exports) {
+
+	
+	var styles = [
+	  'webkitTransform',
+	  'MozTransform',
+	  'msTransform',
+	  'OTransform',
+	  'transform'
+	];
+	
+	var el = document.createElement('p');
+	var style;
+	
+	for (var i = 0; i < styles.length; i++) {
+	  style = styles[i];
+	  if (null != el.style[style]) {
+	    module.exports = style;
+	    break;
+	  }
+	}
+
+
+/***/ },
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	
@@ -945,7 +962,7 @@
 
 
 /***/ },
-/* 10 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	
@@ -954,15 +971,15 @@
 	 */
 	
 	try {
-	  var events = __webpack_require__(11);
+	  var events = __webpack_require__(10);
 	} catch(err) {
-	  var events = __webpack_require__(11);
+	  var events = __webpack_require__(10);
 	}
 	
 	try {
-	  var delegate = __webpack_require__(12);
+	  var delegate = __webpack_require__(11);
 	} catch(err) {
-	  var delegate = __webpack_require__(12);
+	  var delegate = __webpack_require__(11);
 	}
 	
 	/**
@@ -1136,7 +1153,7 @@
 
 
 /***/ },
-/* 11 */
+/* 10 */
 /***/ function(module, exports) {
 
 	var bind = window.addEventListener ? 'addEventListener' : 'attachEvent',
@@ -1176,7 +1193,7 @@
 	};
 
 /***/ },
-/* 12 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -1184,15 +1201,15 @@
 	 */
 	
 	try {
-	  var closest = __webpack_require__(13);
+	  var closest = __webpack_require__(12);
 	} catch(err) {
-	  var closest = __webpack_require__(13);
+	  var closest = __webpack_require__(12);
 	}
 	
 	try {
-	  var event = __webpack_require__(11);
+	  var event = __webpack_require__(10);
 	} catch(err) {
-	  var event = __webpack_require__(11);
+	  var event = __webpack_require__(10);
 	}
 	
 	/**
@@ -1233,7 +1250,7 @@
 
 
 /***/ },
-/* 13 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -1241,9 +1258,9 @@
 	 */
 	
 	try {
-	  var matches = __webpack_require__(14)
+	  var matches = __webpack_require__(13)
 	} catch (err) {
-	  var matches = __webpack_require__(14)
+	  var matches = __webpack_require__(13)
 	}
 	
 	/**
@@ -1275,7 +1292,7 @@
 
 
 /***/ },
-/* 14 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -1283,9 +1300,9 @@
 	 */
 	
 	try {
-	  var query = __webpack_require__(15);
+	  var query = __webpack_require__(14);
 	} catch (err) {
-	  var query = __webpack_require__(15);
+	  var query = __webpack_require__(14);
 	}
 	
 	/**
@@ -1331,7 +1348,7 @@
 
 
 /***/ },
-/* 15 */
+/* 14 */
 /***/ function(module, exports) {
 
 	function one(selector, el) {
@@ -1358,7 +1375,7 @@
 
 
 /***/ },
-/* 16 */
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	
@@ -1366,10 +1383,10 @@
 	 * Module dependencies.
 	 */
 	
-	var Emitter = __webpack_require__(17);
-	var clone = __webpack_require__(18);
-	var type = __webpack_require__(19);
-	var ease = __webpack_require__(20);
+	var Emitter = __webpack_require__(16);
+	var clone = __webpack_require__(17);
+	var type = __webpack_require__(18);
+	var ease = __webpack_require__(19);
 	
 	/**
 	 * Expose `Tween`.
@@ -1541,7 +1558,7 @@
 	};
 
 /***/ },
-/* 17 */
+/* 16 */
 /***/ function(module, exports) {
 
 	
@@ -1708,7 +1725,7 @@
 
 
 /***/ },
-/* 18 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -1717,9 +1734,9 @@
 	
 	var type;
 	try {
-	  type = __webpack_require__(19);
+	  type = __webpack_require__(18);
 	} catch (_) {
-	  type = __webpack_require__(19);
+	  type = __webpack_require__(18);
 	}
 	
 	/**
@@ -1771,7 +1788,7 @@
 
 
 /***/ },
-/* 19 */
+/* 18 */
 /***/ function(module, exports) {
 
 	/**
@@ -1811,7 +1828,7 @@
 
 
 /***/ },
-/* 20 */
+/* 19 */
 /***/ function(module, exports) {
 
 	
@@ -1987,7 +2004,7 @@
 
 
 /***/ },
-/* 21 */
+/* 20 */
 /***/ function(module, exports) {
 
 	/**
@@ -2027,7 +2044,7 @@
 
 
 /***/ },
-/* 22 */
+/* 21 */
 /***/ function(module, exports) {
 
 	module.exports = throttle;
@@ -2065,7 +2082,7 @@
 
 
 /***/ },
-/* 23 */
+/* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
 	
@@ -2073,7 +2090,7 @@
 	 * Module dependencies.
 	 */
 	
-	var now = __webpack_require__(24);
+	var now = __webpack_require__(23);
 	
 	/**
 	 * Returns a function, that, as long as it continues to be invoked, will not
@@ -2124,7 +2141,7 @@
 
 
 /***/ },
-/* 24 */
+/* 23 */
 /***/ function(module, exports) {
 
 	module.exports = Date.now || now
@@ -2135,7 +2152,7 @@
 
 
 /***/ },
-/* 25 */
+/* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var detect = __webpack_require__(3)
@@ -2195,11 +2212,11 @@
 
 
 /***/ },
-/* 26 */
+/* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
-	var event = __webpack_require__(11)
+	var event = __webpack_require__(10)
 	
 	// detect available wheel event
 	var support = 'onwheel' in document.createElement('div') ? 'wheel' : // Modern browsers support "wheel"
@@ -2270,14 +2287,14 @@
 
 
 /***/ },
-/* 27 */
+/* 26 */
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {module.exports = 'ontouchstart' in global || (global.DocumentTouch && document instanceof DocumentTouch)
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 28 */
+/* 27 */
 /***/ function(module, exports) {
 
 	// DEV: We don't use var but favor parameters since these play nicer with minification
@@ -2310,12 +2327,12 @@
 
 
 /***/ },
-/* 29 */
+/* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var attachEvent = document.attachEvent
-	var once = __webpack_require__(30)
-	var raf = __webpack_require__(21)
+	var once = __webpack_require__(29)
+	var raf = __webpack_require__(20)
 	
 	var cancelFrame = (function(){
 	  var cancel = window.cancelAnimationFrame || window.mozCancelAnimationFrame || window.webkitCancelAnimationFrame ||
@@ -2374,10 +2391,10 @@
 
 
 /***/ },
-/* 30 */
+/* 29 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var wrappy = __webpack_require__(31)
+	var wrappy = __webpack_require__(30)
 	module.exports = wrappy(once)
 	
 	once.proto = once(function () {
@@ -2401,7 +2418,7 @@
 
 
 /***/ },
-/* 31 */
+/* 30 */
 /***/ function(module, exports) {
 
 	// Returns a wrapper function that returns a wrapped callback
@@ -2440,18 +2457,18 @@
 
 
 /***/ },
-/* 32 */
+/* 31 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	exports.__esModule = true;
 	
-	var _raf = __webpack_require__(21);
+	var _raf = __webpack_require__(20);
 	
 	var _raf2 = _interopRequireDefault(_raf);
 	
-	var _tween = __webpack_require__(16);
+	var _tween = __webpack_require__(15);
 	
 	var _tween2 = _interopRequireDefault(_tween);
 	
@@ -2459,31 +2476,31 @@
 	
 	var _propDetect2 = _interopRequireDefault(_propDetect);
 	
-	var _events = __webpack_require__(10);
+	var _events = __webpack_require__(9);
 	
 	var _events2 = _interopRequireDefault(_events);
 	
-	var _emitter = __webpack_require__(9);
+	var _emitter = __webpack_require__(8);
 	
 	var _emitter2 = _interopRequireDefault(_emitter);
 	
-	var _computedStyle = __webpack_require__(28);
+	var _computedStyle = __webpack_require__(27);
 	
 	var _computedStyle2 = _interopRequireDefault(_computedStyle);
 	
-	var _hasTouch = __webpack_require__(27);
+	var _hasTouch = __webpack_require__(26);
 	
 	var _hasTouch2 = _interopRequireDefault(_hasTouch);
 	
-	var _debounce = __webpack_require__(23);
+	var _debounce = __webpack_require__(22);
 	
 	var _debounce2 = _interopRequireDefault(_debounce);
 	
-	var _mouseWheelEvent = __webpack_require__(26);
+	var _mouseWheelEvent = __webpack_require__(25);
 	
 	var _mouseWheelEvent2 = _interopRequireDefault(_mouseWheelEvent);
 	
-	var _resizelistener = __webpack_require__(29);
+	var _resizelistener = __webpack_require__(28);
 	
 	var _resizelistener2 = _interopRequireDefault(_resizelistener);
 	
@@ -2520,7 +2537,7 @@
 	    el.style.overflow = 'hidden';
 	    _this.interval = opt.interval || 1000;
 	    _this.duration = opt.duration || 300;
-	    _this.wrapper = firstChild(_this.el);
+	    _this.wrapper = _this.el.firstElementChild;
 	    if (!_this.wrapper) throw new Error('Child element required for hscroll');
 	    _this.type = opt.type || 'normal';
 	    // maximun duration in ms for fast swipe
@@ -2660,6 +2677,8 @@
 	    if (dx > 5) {
 	      e.stopPropagation ? e.stopPropagation() : e.cancelBubble = true;
 	      e.stopImmediatePropagation ? e.stopImmediatePropagation() : void 0;
+	    } else {
+	      this.emit('select', this.curr());
 	    }
 	    if (this.type == 'swipe' && dx > dy && dx > this.fastThreshold && t - this.down.at < this.threshold) {
 	      // fast swipe
@@ -2735,6 +2754,8 @@
 	   */
 	
 	  Hscroll.prototype.unbind = function unbind() {
+	    this.emit('ubind');
+	    this.stop();
 	    this.events.unbind();
 	    this.docEvents.unbind();
 	    this.unbindResize();
@@ -2789,6 +2810,15 @@
 	      self.emit('show', to);
 	    });
 	  };
+	
+	  /**
+	   * Get a sane item index from direction
+	   *
+	   * @private
+	   * @param {Number} dir
+	   * @returns {Number}
+	   */
+	
 	
 	  Hscroll.prototype.toFixed = function toFixed(dir) {
 	    var to = this.curr() - dir;
@@ -3063,26 +3093,16 @@
 	  return isNaN(n) ? 0 : n;
 	}
 	
-	function firstChild(el) {
-	  el = el.firstChild;
-	  if (!el) return null;
-	  do {
-	    if (el.nodeType === 1) return el;
-	    el = el.nextSibling;
-	  } while (el);
-	  return null;
-	}
-	
 	exports['default'] = Hscroll;
 	module.exports = exports['default'];
 
 /***/ },
-/* 33 */
+/* 32 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var hasTouch = __webpack_require__(27)
-	var event = __webpack_require__(11)
-	var tap = __webpack_require__(34)
+	var hasTouch = __webpack_require__(26)
+	var event = __webpack_require__(10)
+	var tap = __webpack_require__(33)
 	
 	function now() {
 	  return (new Date()).getTime()
@@ -3132,7 +3152,7 @@
 
 
 /***/ },
-/* 34 */
+/* 33 */
 /***/ function(module, exports) {
 
 	var endEvents = [
