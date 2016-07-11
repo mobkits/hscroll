@@ -1,6 +1,6 @@
 var Iscroll = require('iscroll')
 var event = require('event')
-var Hscroll = require('..')
+var Hscroll = require('../src/index')
 var detect = require('prop-detect')
 var transform = detect.transform
 var ontap = require('ontap')
