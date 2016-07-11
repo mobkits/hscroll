@@ -4,7 +4,7 @@ Make element horizon scrollable.
 
 See [example](https://chemzqm.github.io/hscroll) with your phone.
 
-Works on IE >= 8 and all modern browsers.
+Works on IE >= 8 ([child elements polyfill](https://github.com/Alhadis/Snippets/blob/master/js/polyfills/IE8-child-elements.js) is required) and all modern browsers.
 
 ## Features
 
