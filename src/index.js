@@ -54,6 +54,7 @@ class Hscroll extends Emitter {
     if (!hasTouch && document.addEventListener) {
       this.events.bind('mousedown', 'ontouchstart')
       this.events.bind('mousemove', 'ontouchmove')
+      this.events.bind('mouseup', 'ontouchend')
       this.docEvents.bind('mouseup', 'ontouchend')
       this._wheelUnbind = wheel(this.el, this.onwheel.bind(this), false)
     } else if (hasTouch) {
@@ -154,12 +155,15 @@ class Hscroll extends Emitter {
     this.move = null
     const touch = this.getTouch(e)
     if (!touch) return
-    e.stopPropagation()
     const t = Date.now()
     const x = touch.pageX
     const y = touch.pageY
     const dx = Math.abs(x - this.down.x)
     const dy = Math.abs(y - this.down.y)
+    if (dx > 5) {
+      e.stopPropagation()
+      e.stopImmediatePropagation()
+    }
     if (this.type == 'swipe' &&
         dx > dy && dx > this.fastThreshold &&
         (t - this.down.at) < this.threshold ) {
