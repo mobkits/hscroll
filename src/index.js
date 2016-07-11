@@ -25,7 +25,7 @@ class Hscroll extends Emitter {
     el.style.overflow = 'hidden'
     this.interval = opt.interval || 1000
     this.duration = opt.duration || 300
-    this.wrapper = firstChild(this.el)
+    this.wrapper = this.el.firstElementChild
     if (!this.wrapper) throw new Error('Child element required for hscroll')
     this.type = opt.type || 'normal'
     // maximun duration in ms for fast swipe
@@ -293,6 +293,13 @@ class Hscroll extends Emitter {
     })
   }
 
+  /**
+   * Get a sane item index from direction
+   *
+   * @private
+   * @param {Number} dir
+   * @returns {Number}
+   */
   toFixed(dir) {
     let to = this.curr() - dir
     const max = this.type == 'swipe' ? this.itemCount - 1
@@ -540,16 +547,6 @@ class Hscroll extends Emitter {
 function numberStyle(el, style) {
   const n = parseInt(computedStyle(el, style), 10)
   return isNaN(n) ? 0 :n
-}
-
-function firstChild(el) {
-  el = el.firstChild
-  if (!el) return null
-  do {
-    if (el.nodeType === 1) return el
-    el = el.nextSibling
-  } while(el)
-  return null
 }
 
 export default Hscroll
