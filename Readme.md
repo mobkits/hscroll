@@ -8,9 +8,10 @@ Works on IE >= 8 ([child elements polyfill](https://github.com/Alhadis/Snippets/
 
 ## Features
 
-* Support both touch and mouse events.
+* Support touch, mouse, and wheel events.
+* Auto refresh on dom size changes.
+* Support items dynamic add and remove (need to call refresh)
 * Swipe and fix mode.
-* Refresh on dom size changes.
 * Works fine with vertical scroll component, like [iscroll](https://github.com/chemzqm/iscroll).
 * Works fine with tap component, like [tap-event](https://github.com/chemzqm/tap-event).
 * Light weight (no jquery) and high performance.
@@ -18,7 +19,7 @@ Works on IE >= 8 ([child elements polyfill](https://github.com/Alhadis/Snippets/
 ## Limitation
 
 * Css `box-sizing` must be `border-box`.
-* Single wrapper element as child of container element.
+* First element child of container have to be wrapper element.
 * Children elements should not have `display:none` and margin css applied.
 
 ## Example
