@@ -25,6 +25,7 @@ class Hscroll extends Emitter {
     super()
     this.el = el
     el.style.overflow = 'hidden'
+    this.loop = opt.loop || false
     this.interval = opt.interval || 1000
     this.duration = opt.duration || 300
     this.wrapper = this.el.firstElementChild
@@ -315,9 +316,9 @@ class Hscroll extends Emitter {
     const max = this.type == 'swipe' ? this.itemCount - 1
               : this.itemCount - Math.floor(this.viewWidth/this.itemWidth)
     if (to < 0) {
-      to = max
+      to = this.loop ? max : 0
     } else if (to > max) {
-      to = 0
+      to = this.loop ? 0 : max
     }
     return to
   }

@@ -6,9 +6,6 @@ See [example](https://chemzqm.github.io/hscroll) with your phone.
 
 Works on IE >= 8 ([child elements polyfill](https://github.com/Alhadis/Snippets/blob/master/js/polyfills/IE8-child-elements.js) is required) and all modern browsers.
 
-TODO: support mutation oberserver
-TODO: make iterate an option
-
 ## Features
 
 * Support touch, mouse, and wheel events.
@@ -62,8 +59,9 @@ Create Hscroll with element and optional option.
 * `opt.duration` animation duration in ms, default 300.
 * `opt.threshold` maximun duration in ms for fast swipe.
 * `opt.fastThreshold` minimum moved distance for fast swipe.
-* `opt.autoWidth` set item width to swiper width.
-* `opt.autoHeight` set swiper height to be max item height.
+* `opt.autoWidth` default `false`, set item width to swiper width.
+* `opt.autoHeight` default `false`, set swiper height to be max item height.
+* `opt.loop` default `false`, loop through items on `prev()` and `next()`
 
 ### .unbind()
 
