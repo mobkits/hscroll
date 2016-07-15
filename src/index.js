@@ -8,6 +8,8 @@ import hasTouch from 'has-touch'
 import debounce from 'debounce'
 import wheel from 'mouse-wheel-event'
 import resize from 'resizelistener'
+import removed from 'removed'
+
 const has3d = detect.has3d
 const transform = detect.transform
 
@@ -38,6 +40,9 @@ class Hscroll extends Emitter {
     this.tx = 0
     this.bind()
     this.refresh()
+    removed(el, () => {
+      this.unbind()
+    })
   }
 
   /**

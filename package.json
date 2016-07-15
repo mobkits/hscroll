@@ -74,6 +74,7 @@
     "has-touch": "^1.0.1",
     "mouse-wheel-event": "^1.2.3",
     "prop-detect": "^1.1.0",
+    "removed": "0.0.5",
     "resizelistener": "0.0.3"
   },
   "browser": {
