@@ -450,7 +450,7 @@ class Hscroll extends Emitter {
     if (this.autoWidth || this.autoHeight) {
       // set height and width
       for (let i = 0, l = items.length; i < l; i++) {
-        h = Math.max(h, items[i].clickHeight)
+        h = Math.max(h, items[i].clientHeight)
         if (this.autoWidth) items[i].style.width = `${this.viewWidth}px`
       }
     }
