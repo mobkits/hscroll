@@ -97,21 +97,22 @@ class Hscroll extends Emitter {
 
   ontouchstart(e) {
     if (this.animating) this.tween.stop()
-    const target = e.target || e.srcElement
+    let target = e.target || e.srcElement
     if (target.tagName.toLowerCase() == 'input') {
       if (/^(text|password|tel|search|number|email|url)$/.test(target.type)
       && target.value) return
     }
-    const touch = this.getTouch(e)
+    let touch = this.getTouch(e)
     if (!touch) return
+    this.start = this.curr()
     this.speed = 0
-    const d = Date.now()
-    const sx = touch.pageX
-    const sy = touch.pageY
-    const self = this
-    const tx = this.tx
-    const limit = this.getLimitation()
-    const pad = 20
+    let d = Date.now()
+    let sx = touch.pageX
+    let sy = touch.pageY
+    let self = this
+    let tx = this.tx
+    let limit = this.getLimitation()
+    let pad = 20
     this.down = {
       x: sx,
       y: sy,
@@ -119,11 +120,11 @@ class Hscroll extends Emitter {
       at: d
     }
     this.move = (e, touch) => {
-      const cx = touch.pageX
-      const cy = touch.pageY
-      const px = self.previous ? self.previous.x : sx
-      const py = self.previous ? self.previous.y : sy
-      const leftOrRight = Math.abs(cx - px) > Math.abs(cy - py)
+      let cx = touch.pageX
+      let cy = touch.pageY
+      let px = self.previous ? self.previous.x : sx
+      let py = self.previous ? self.previous.y : sy
+      let leftOrRight = Math.abs(cx - px) > Math.abs(cy - py)
       if (!leftOrRight) return
       e.preventDefault()
       e.stopPropagation()
@@ -142,7 +143,7 @@ class Hscroll extends Emitter {
    */
 
   ontouchmove(e) {
-    const touch = this.getTouch(e)
+    let touch = this.getTouch(e)
     if (!touch || this.animating || !this.move) {
       this.move = null
       return
@@ -159,13 +160,13 @@ class Hscroll extends Emitter {
   ontouchend(e) {
     if (!this.move || !this.down || this.animating) return
     this.move = null
-    const touch = this.getTouch(e)
+    let touch = this.getTouch(e)
     if (!touch) return
-    const t = Date.now()
-    const x = touch.pageX
-    const y = touch.pageY
-    const dx = Math.abs(x - this.down.x)
-    const dy = Math.abs(y - this.down.y)
+    let t = Date.now()
+    let x = touch.pageX
+    let y = touch.pageY
+    let dx = Math.abs(x - this.down.x)
+    let dy = Math.abs(y - this.down.y)
     if (dx > 5) {
       e.stopPropagation()
       e.stopImmediatePropagation()
@@ -177,8 +178,8 @@ class Hscroll extends Emitter {
         dx > dy && dx > this.fastThreshold &&
         (t - this.down.at) < this.threshold ) {
       // fast swipe
-      const dir = x > this.down.x ? 1 : -1
-      this.show(this.curr() - dir)
+      let dir = x > this.down.x ? 1 : -1
+      this.show(this.start - dir)
     } else {
       if (this.type == 'swipe') {
         this.reset()
@@ -194,7 +195,7 @@ class Hscroll extends Emitter {
     e.preventDefault()
     this.stop()
     if (this.ts && !this.animating) {
-      const speed = Math.abs(dx)/(Date.now() - this.ts)
+      let speed = Math.abs(dx)/(Date.now() - this.ts)
       if (this.type == 'swipe' && speed > 2) this.swipe(dx < 0 ? 1 : -1)
       if (this.type == 'normal') {
         let tx = this.tx - dx
@@ -208,13 +209,13 @@ class Hscroll extends Emitter {
   }
 
   momentum() {
-    const deceleration = 0.001
+    let deceleration = 0.001
     let speed = this.speed
-    const x = this.tx
+    let x = this.tx
     speed = Math.min(speed, 2)
-    const limit = this.getLimitation()
-    const minX = limit.min
-    const rate = (4 - Math.PI)/2
+    let limit = this.getLimitation()
+    let minX = limit.min
+    let rate = (4 - Math.PI)/2
     let destination = x + rate*(speed*speed)/(2*deceleration)*this.direction
     let duration = speed/deceleration
     let newX
@@ -235,7 +236,7 @@ class Hscroll extends Emitter {
       ease = 'out-circ'
     }
     if (this.type == 'fix') {
-      const width = this.itemWidth
+      let width = this.itemWidth
       destination = Math.round(destination/width)*width
     }
     this.animate(destination, duration, ease)
@@ -294,9 +295,9 @@ class Hscroll extends Emitter {
    * @param {Number} dir 1 or -1
    */
   swipe(dir) {
-    const to = this.toFixed(dir)
-    const self = this
-    const x = - to*this.viewWidth
+    let to = this.toFixed(dir)
+    let self = this
+    let x = - to*this.viewWidth
     if (x === this.tx) return Promise.resolve(null)
     return this.animate(x).then(stopped => {
       if (stopped) return
@@ -313,7 +314,7 @@ class Hscroll extends Emitter {
    */
   toFixed(dir) {
     let to = this.curr() - dir
-    const max = this.type == 'swipe' ? this.itemCount - 1
+    let max = this.type == 'swipe' ? this.itemCount - 1
               : this.itemCount - Math.floor(this.viewWidth/this.itemWidth)
     if (to < 0) {
       to = this.loop ? max : 0
@@ -333,14 +334,14 @@ class Hscroll extends Emitter {
    */
   show(n, duration, ease) {
     if (this.animating) this.tween.stop()
-    const width = this.type == 'swipe' ? this.viewWidth : this.itemWidth
+    let width = this.type == 'swipe' ? this.viewWidth : this.itemWidth
     n = Math.max(n , 0)
     n = Math.min(n, this.itemCount - 1)
     let tx = - n * width
-    const limit = this.getLimitation()
+    let limit = this.getLimitation()
     tx = Math.max(tx, limit.min)
     if (tx == this.tx) return Promise.resolve(null)
-    const self = this
+    let self = this
     if (duration === 0) {
       this.setTransform(tx)
       this.emit('show', n)
@@ -383,8 +384,8 @@ class Hscroll extends Emitter {
     if (this.inter != null) clearInterval(this.inter)
     this.inter = setInterval(() => {
       if (!this.playing) return
-      const curr = this.curr()
-      const max = this.type == 'swipe' ? this.itemCount - 1
+      let curr = this.curr()
+      let max = this.type == 'swipe' ? this.itemCount - 1
                 : this.itemCount - Math.floor(this.viewWidth/this.itemWidth)
       if (curr >= max) {
         this.first()
@@ -410,8 +411,8 @@ class Hscroll extends Emitter {
    * @public
    */
   reset() {
-    const limit = this.getLimitation()
-    const tx = this.tx
+    let limit = this.getLimitation()
+    let tx = this.tx
     if (tx < limit.min) {
       this.animate(limit.min)
     } else if (tx > limit.max) {
@@ -441,12 +442,12 @@ class Hscroll extends Emitter {
    * @public
    */
   refresh() {
-    const parent = this.wrapper
+    let parent = this.wrapper
     this.viewWidth = this.el.clientWidth
-    const items = parent.children
+    let items = parent.children
     this.itemWidth = this.autoWidth ? this.viewWidth:items[0].clientWidth
     let h = 0
-    const pb = numberStyle(this.wrapper, 'padding-bottom')
+    let pb = numberStyle(this.wrapper, 'padding-bottom')
     if (this.autoWidth || this.autoHeight) {
       // set height and width
       for (let i = 0, l = items.length; i < l; i++) {
@@ -455,7 +456,7 @@ class Hscroll extends Emitter {
       }
     }
     if (this.autoHeight) parent.style.height = `${h + ( pb ? pb : 0)}px`
-    const width = items.length * this.itemWidth
+    let width = items.length * this.itemWidth
     parent.style.width =  `${width}px`
     if (this.type == 'swipe') {
       this.itemCount = Math.ceil(width/this.viewWidth)
@@ -512,9 +513,9 @@ class Hscroll extends Emitter {
    * @param {String} ease
    */
   animate(x, duration=this.duration, ease='out-circ') {
-    const self = this
+    let self = this
     this.animating = true
-    const tween = this.tween = Tween({x: this.tx})
+    let tween = this.tween = Tween({x: this.tx})
       .ease(ease)
       .to({x})
       .duration(duration)
@@ -523,7 +524,7 @@ class Hscroll extends Emitter {
       self.setTransform(o.x)
     })
 
-    const promise = new Promise(resolve => {
+    let promise = new Promise(resolve => {
       tween.on('end', () => {
         animate = () => {} // eslint-disable-line
         self.animating = false
@@ -541,11 +542,11 @@ class Hscroll extends Emitter {
   }
 
   calcuteSpeed(x, y) {
-    const previous = this.previous || this.down
-    const ts = Date.now()
-    const dt = ts - previous.at
+    let previous = this.previous || this.down
+    let ts = Date.now()
+    let dt = ts - previous.at
     if (ts - this.down.at < 100 || dt > 100) {
-      const distance = Math.abs(x - previous.x)
+      let distance = Math.abs(x - previous.x)
       this.speed =distance / dt
       this.direction = x > previous.x ? 1 : -1
     }
@@ -556,7 +557,7 @@ class Hscroll extends Emitter {
 }
 
 function numberStyle(el, style) {
-  const n = parseInt(computedStyle(el, style), 10)
+  let n = parseInt(computedStyle(el, style), 10)
   return isNaN(n) ? 0 :n
 }
 
