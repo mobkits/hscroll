@@ -344,11 +344,13 @@ class Hscroll extends Emitter {
     let self = this
     if (duration === 0) {
       this.setTransform(tx)
+      this.refresh()
       this.emit('show', n)
       return Promise.resolve(null)
     }
     return this.animate(tx, duration, ease).then(stopped => {
       if (stopped) return
+      this.refresh()
       self.emit('show', n)
     })
   }
@@ -446,16 +448,15 @@ class Hscroll extends Emitter {
     this.viewWidth = this.el.clientWidth
     let items = parent.children
     this.itemWidth = this.autoWidth ? this.viewWidth:items[0].clientWidth
-    let h = 0
-    let pb = numberStyle(this.wrapper, 'padding-bottom')
-    if (this.autoWidth || this.autoHeight) {
+    if (this.autoWidth) {
       // set height and width
       for (let i = 0, l = items.length; i < l; i++) {
-        h = Math.max(h, items[i].clientHeight)
         if (this.autoWidth) items[i].style.width = `${this.viewWidth}px`
       }
     }
-    if (this.autoHeight) parent.style.height = `${h + ( pb ? pb : 0)}px`
+    let h = items[this.curr()].clientHeight
+    let pb = parseInt(computedStyle(parent, 'padding-bottom'), 10) || 0
+    if (this.autoHeight) parent.style.height = `${h + pb}px`
     let width = items.length * this.itemWidth
     parent.style.width =  `${width}px`
     if (this.type == 'swipe') {
@@ -554,11 +555,6 @@ class Hscroll extends Emitter {
       this.previous = {x, y, at: ts}
     }
   }
-}
-
-function numberStyle(el, style) {
-  let n = parseInt(computedStyle(el, style), 10)
-  return isNaN(n) ? 0 :n
 }
 
 export default Hscroll
