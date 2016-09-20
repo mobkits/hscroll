@@ -446,6 +446,7 @@ class Hscroll extends Emitter {
   refresh() {
     let parent = this.wrapper
     this.viewWidth = this.el.clientWidth
+    if (this.viewWidth == 0) return
     let items = parent.children
     this.itemWidth = this.autoWidth ? this.viewWidth:items[0].clientWidth
     if (this.autoWidth) {
