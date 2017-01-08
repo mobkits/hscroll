@@ -455,7 +455,9 @@ class Hscroll extends Emitter {
         if (this.autoWidth) items[i].style.width = `${this.viewWidth}px`
       }
     }
-    let h = items[this.curr()].clientHeight
+    let item = items[this.curr()]
+    if (!item) return
+    let h = item.clientHeight
     let pb = parseInt(computedStyle(parent, 'padding-bottom'), 10) || 0
     if (this.autoHeight) parent.style.height = `${h + pb}px`
     let width = items.length * this.itemWidth
